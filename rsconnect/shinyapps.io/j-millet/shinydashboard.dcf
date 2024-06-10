@@ -1,0 +1,10 @@
+name: shinydashboard
+title:
+username: j-millet
+account: j-millet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12154128
+bundleId: 8720265
+url: https://j-millet.shinyapps.io/shinydashboard/
+version: 1
