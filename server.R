@@ -62,6 +62,19 @@ function(input, output,session) {
     return(dataSelected)
   })
   
+  filteredDataCountryGraph <- reactive({
+    dataSelected <- covid_monthly %>%
+      select(all_of(input$selectedVarCG),location,iso_code,month,population)
+    
+    names(dataSelected)[names(dataSelected) == input$selectedVarCG] <- 'selected'
+    dataSelected <- dataSelected %>% 
+      replace_na(list(selected = 0)) %>%
+      mutate(
+        selected_per_capita = selected/population
+      )
+    return(dataSelected)
+  })
+  
   output$covidMap <- renderLeaflet({
     
     leaflet(geopoly) %>%
@@ -274,12 +287,12 @@ function(input, output,session) {
   })
   
   output$covidTrends <- renderPlotly({
-    plot_ly(data = filteredData(), x = ~month, y = ~selected, color = ~location, type = 'scatter', mode = 'lines') %>%
-      layout(xaxis = list(title = "Month", tickformat = "%Y-%m"), yaxis = list(title = str_to_sentence(gsub("_"," ",input$selectedVar))))
+    plot_ly(data = filteredDataCountryGraph(), x = ~month, y = ~selected, color = ~location, type = 'scatter', mode = 'lines') %>%
+      layout(xaxis = list(title = "Month", tickformat = "%Y-%m"), yaxis = list(title = str_to_sentence(gsub("_"," ",input$selectedVarCG))))
   })
   output$covidTrendsPC <- renderPlotly({
-    d <- filteredData()
-    max_val <- d$selected_per_capita %>% max() %>% round(1)
+    d <- filteredDataCountryGraph()
+    max_val <- d$selected_per_capita %>% max()
     max_val <- max_val * 100
     d$selected_per_capita <- (d$selected_per_capita * 100) %>% round(4)
     
@@ -287,8 +300,8 @@ function(input, output,session) {
       layout(
         xaxis = list(title = "Month", tickformat = "%Y-%m"), 
         yaxis = list(
-          title = paste(str_to_sentence(gsub("_"," ",input$selectedVar)),"(Percent of population)"),
-          range = c(0,max_val+5)
+          title = paste(str_to_sentence(gsub("_"," ",input$selectedVarCG)),"(Percent of population)"),
+          range = c(0,max_val*1.05)
           )
         )
   })

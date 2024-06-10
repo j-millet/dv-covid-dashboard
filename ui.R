@@ -71,7 +71,7 @@ dashboardPage(
                       
                     column(width=2,
                            h4("Select a variable to plot:"),
-                           selectInput("selectedVar",
+                           selectInput("selectedVarCG",
                                        "Variable:",
                                        c("Total Cases" = "total_cases",
                                          "Total Deaths" = "total_deaths",
